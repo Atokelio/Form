@@ -1,0 +1,153 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <h1>Регистрация</h1>
+  <mat-card>
+    <div class="flex-group" formGroupName="account">
+      <h3>Аккаунт</h3>
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput required formControlName="email">
+        <mat-error *ngIf="form.get('account').get('email').invalid && form.get('account').get('email').errors.required">
+          Email не может быть пустым
+        </mat-error>
+        <mat-error *ngIf="form.get('account').get('email').invalid && form.get('account').get('email').errors.email">
+          Введите корректый email
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Пароль</mat-label>
+        <input matInput required formControlName="password">
+        <mat-error
+          *ngIf="form.get('account').get('password').invalid && form.get('account').get('password').errors.required">
+          Пароль не может быть пустым
+        </mat-error>
+        <mat-error
+          *ngIf="form.get('account').get('password').invalid && form.get('account').get('password').errors.minlength">
+          Длина должна быть не менее {{form.get('account').get('password').errors.minlength.requiredLength}}
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Подтверждение пароля</mat-label>
+        <input matInput required formControlName="confirmPassword" [errorStateMatcher]="errorMatcher">
+        <mat-error
+          *ngIf="form.get('account').hasError('passwordsDoNotMatch')">
+          Пароли не совпадают
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex-group">
+      <h3>Профиль</h3>
+      <mat-form-field>
+        <mat-label>Имя</mat-label>
+        <input matInput>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Телефон</mat-label>
+        <input matInput placeholder="8(800) 200 1535" mask="0(000) 000 0000">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Город</mat-label>
+        <input matInput>
+      </mat-form-field>
+    </div>
+
+    <div class="flex-group" formGroupName="company">
+      <h3>Компания</h3>
+      <mat-form-field>
+        <mat-label>Наименование</mat-label>
+        <input matInput required formControlName="companyName">
+        <mat-error
+          *ngIf="form.get('company').get('companyName').invalid && form.get('company').get('companyName').errors.required">
+          Наименование не может быть пустым
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Форма собственности</mat-label>
+        <mat-select required formControlName="ownershipType">
+          <mat-option value="le">Юр.лицо</mat-option>
+          <mat-option value="sp">ИП</mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="form.get('company').get('ownershipType').invalid && form.get('company').get('ownershipType').errors.required">
+          Выберете форму собственности
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>ИНН</mat-label>
+        <input matInput required formControlName="individualNumber">
+        <mat-error
+          *ngIf="form.get('company').get('individualNumber').invalid && form.get('company').get('individualNumber').errors.required">
+          ИНН не может быть пустым
+        </mat-error>
+        <mat-error
+          *ngIf="form.get('company').get('individualNumber').invalid && form.get('company').get('individualNumber').errors.minlength"
+        >
+          ИНН содержит {{form.get('company').get('individualNumber').errors.minlength.requiredLength}} цифр
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngIf="form.get('company').get('ownershipType').value === 'le'">
+        <mat-label>КПП</mat-label>
+        <input matInput required formControlName="industrialEnterprisesClassifier">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>ОКПО</mat-label>
+        <input matInput required formControlName="allRussianClassifierEnterprises">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Дата образования</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="creationDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="flex-group">
+      <h3>Контакты</h3>
+      <div *ngFor="let contact of contacts.controls; let idx = index">
+        <div class="flex-group" [formGroup]="contact">
+          <h4>№ {{idx + 1}}</h4>
+          <mat-form-field>
+            <mat-label>Имя</mat-label>
+            <input matInput required formControlName="contactName">
+            <mat-error
+              *ngIf="contact.get('contactName').invalid && contact.get('contactName').errors.required">
+              Укажите имя контакта
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Должность</mat-label>
+            <input matInput required formControlName="contactPosition">
+            <mat-error
+              *ngIf="contact.get('contactPosition').invalid && contact.get('contactPosition').errors.required">
+              Укажите должность
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Телефон</mat-label>
+            <input matInput required formControlName="contactPhone" placeholder="8(800) 200 1535"
+                   mask="0(000) 000 0000">
+            <mat-error
+              *ngIf="contact.get('contactPhone').invalid && contact.get('contactPhone').errors.required">
+              Укажите контактный телефон
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <button
+        mat-raised-button
+        type="button"
+        class="btn"
+        (click)="addContact()"
+      >
+        Добавить контакт
+      </button>
+    </div>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="form.invalid"
+    >
+      Отправить
+    </button>
+  </mat-card>
+</form>
