@@ -6,10 +6,12 @@
       <mat-form-field>
         <mat-label>Email</mat-label>
         <input matInput required formControlName="email">
-        <mat-error *ngIf="form.get('account').get('email').invalid && form.get('account').get('email').errors.required">
+        <mat-error *ngIf="form.get('account.email').invalid
+        && form.get('account.email').errors.required">
           Email не может быть пустым
         </mat-error>
-        <mat-error *ngIf="form.get('account').get('email').invalid && form.get('account').get('email').errors.email">
+        <mat-error *ngIf="form.get('account.email').invalid
+        && form.get('account.email').errors.email">
           Введите корректый email
         </mat-error>
       </mat-form-field>
@@ -17,12 +19,14 @@
         <mat-label>Пароль</mat-label>
         <input matInput required formControlName="password">
         <mat-error
-          *ngIf="form.get('account').get('password').invalid && form.get('account').get('password').errors.required">
+          *ngIf="form.get('account.password').invalid
+          && form.get('account.password').errors.required">
           Пароль не может быть пустым
         </mat-error>
         <mat-error
-          *ngIf="form.get('account').get('password').invalid && form.get('account').get('password').errors.minlength">
-          Длина должна быть не менее {{form.get('account').get('password').errors.minlength.requiredLength}}
+          *ngIf="form.get('account.password').invalid
+          && form.get('account.password').errors.minlength">
+          Длина должна быть не менее {{form.get('account.password').errors.minlength.requiredLength}}
         </mat-error>
       </mat-form-field>
       <mat-form-field>
@@ -34,41 +38,41 @@
         </mat-error>
       </mat-form-field>
     </div>
-
-    <div class="flex-group">
+    <div class="flex-group" formGroupName="profile">
       <h3>Профиль</h3>
       <mat-form-field>
         <mat-label>Имя</mat-label>
-        <input matInput>
+        <input matInput formControlName="userName">
       </mat-form-field>
       <mat-form-field>
         <mat-label>Телефон</mat-label>
-        <input matInput placeholder="8(800) 200 1535" mask="0(000) 000 0000">
+        <input matInput placeholder="8(800) 200 1535" mask="0(000) 000 0000" formControlName="phone">
       </mat-form-field>
       <mat-form-field>
         <mat-label>Город</mat-label>
-        <input matInput>
+        <input matInput formControlName="city">
       </mat-form-field>
     </div>
-
     <div class="flex-group" formGroupName="company">
       <h3>Компания</h3>
       <mat-form-field>
         <mat-label>Наименование</mat-label>
         <input matInput required formControlName="companyName">
         <mat-error
-          *ngIf="form.get('company').get('companyName').invalid && form.get('company').get('companyName').errors.required">
+          *ngIf="form.get('company.companyName').invalid
+          && form.get('company.companyName').errors.required">
           Наименование не может быть пустым
         </mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Форма собственности</mat-label>
-        <mat-select required formControlName="ownershipType">
+        <mat-select required formControlName="ownershipType" (selectionChange)="onChangeOwnershipType()">
           <mat-option value="le">Юр.лицо</mat-option>
           <mat-option value="sp">ИП</mat-option>
         </mat-select>
         <mat-error
-          *ngIf="form.get('company').get('ownershipType').invalid && form.get('company').get('ownershipType').errors.required">
+          *ngIf="form.get('company.ownershipType').invalid
+          && form.get('company.ownershipType').errors.required">
           Выберете форму собственности
         </mat-error>
       </mat-form-field>
@@ -76,22 +80,49 @@
         <mat-label>ИНН</mat-label>
         <input matInput required formControlName="individualNumber">
         <mat-error
-          *ngIf="form.get('company').get('individualNumber').invalid && form.get('company').get('individualNumber').errors.required">
+          *ngIf="form.get('company.individualNumber').invalid
+          && form.get('company.individualNumber').errors.required">
           ИНН не может быть пустым
         </mat-error>
         <mat-error
-          *ngIf="form.get('company').get('individualNumber').invalid && form.get('company').get('individualNumber').errors.minlength"
+          *ngIf="form.get('company.individualNumber').invalid
+          && (form.get('company.individualNumber').errors.minlength
+          || form.get('company.individualNumber').errors.maxlength)"
         >
-          ИНН содержит {{form.get('company').get('individualNumber').errors.minlength.requiredLength}} цифр
+          ИНН содержит 9 цифр
         </mat-error>
       </mat-form-field>
-      <mat-form-field *ngIf="form.get('company').get('ownershipType').value === 'le'">
+      <mat-form-field *ngIf="form.get('company.ownershipType').value === 'le'">
         <mat-label>КПП</mat-label>
         <input matInput required formControlName="industrialEnterprisesClassifier">
+        <mat-error
+          *ngIf="form.get('company.industrialEnterprisesClassifier').invalid
+          && form.get('company.industrialEnterprisesClassifier').errors.required">
+          КПП не может быть пустым
+        </mat-error>
+        <mat-error
+          *ngIf="form.get('company.industrialEnterprisesClassifier').invalid
+          && (form.get('company.industrialEnterprisesClassifier').errors.minlength
+          || form.get('company.industrialEnterprisesClassifier').errors.maxlength)"
+        >
+          КПП содержит 9 цифр
+        </mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>ОКПО</mat-label>
         <input matInput required formControlName="allRussianClassifierEnterprises">
+        <mat-error
+          *ngIf="form.get('company.allRussianClassifierEnterprises').invalid
+          && form.get('company.allRussianClassifierEnterprises').errors.required">
+          ОКПО не может быть пустым
+        </mat-error>
+        <mat-error
+          *ngIf="form.get('company.allRussianClassifierEnterprises').invalid
+          && (form.get('company.allRussianClassifierEnterprises').errors.minlength
+          || form.get('company.allRussianClassifierEnterprises').errors.maxlength)"
+        >
+          ОКПО содержит 8 цифр
+        </mat-error>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Дата образования</mat-label>
@@ -102,14 +133,15 @@
     </div>
     <div class="flex-group">
       <h3>Контакты</h3>
-      <div *ngFor="let contact of contacts.controls; let idx = index">
+      <div *ngFor="let contact of $any(form.get('contacts')).controls; let idx = index">
         <div class="flex-group" [formGroup]="contact">
           <h4>№ {{idx + 1}}</h4>
           <mat-form-field>
             <mat-label>Имя</mat-label>
             <input matInput required formControlName="contactName">
             <mat-error
-              *ngIf="contact.get('contactName').invalid && contact.get('contactName').errors.required">
+              *ngIf="contact.get('contactName').invalid
+              && contact.get('contactName').errors.required">
               Укажите имя контакта
             </mat-error>
           </mat-form-field>
@@ -117,7 +149,8 @@
             <mat-label>Должность</mat-label>
             <input matInput required formControlName="contactPosition">
             <mat-error
-              *ngIf="contact.get('contactPosition').invalid && contact.get('contactPosition').errors.required">
+              *ngIf="contact.get('contactPosition').invalid
+              && contact.get('contactPosition').errors.required">
               Укажите должность
             </mat-error>
           </mat-form-field>
@@ -126,7 +159,8 @@
             <input matInput required formControlName="contactPhone" placeholder="8(800) 200 1535"
                    mask="0(000) 000 0000">
             <mat-error
-              *ngIf="contact.get('contactPhone').invalid && contact.get('contactPhone').errors.required">
+              *ngIf="contact.get('contactPhone').invalid
+              && contact.get('contactPhone').errors.required">
               Укажите контактный телефон
             </mat-error>
           </mat-form-field>

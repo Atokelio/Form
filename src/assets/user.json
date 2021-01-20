@@ -1,0 +1,15 @@
+{
+    "email": "vladislav@wmk.com",
+    "password": "123456",
+    "confirmPassword": "123456",
+    "userName": "Vladislav",
+    "phone": 89992001010,
+    "city": "Saint Petersburg",
+    "companyName": "Womarket",
+    "ownershipType": "le",
+    "individualNumber": 291345124,
+    "industrialEnterprisesClassifier": 821925215,
+    "allRussianClassifierEnterprises": 51241231,
+    "creationDate": "2000, 10, 10",
+    "contacts": []
+  }

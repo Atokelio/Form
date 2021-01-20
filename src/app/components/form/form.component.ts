@@ -1,6 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ErrorMatcher} from '../../utils/error.matcher';
+import {PasswordValidator} from '../../utils/password.validator';
+import {UserService} from '../../services/user.service';
+import {User} from '../../interfaces/user.interface';
+import {transformDate} from '../../utils/transformDate.function';
 
 @Component({
   selector: 'app-form',
@@ -10,9 +14,13 @@ import {ErrorMatcher} from '../../utils/error.matcher';
 })
 
 export class FormComponent implements OnInit {
+  userData: User;
   form: FormGroup;
-  contacts: FormArray;
   errorMatcher = new ErrorMatcher();
+  passwordValidator = new PasswordValidator();
+
+  constructor(private readonly userService: UserService) {
+  }
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -25,8 +33,8 @@ export class FormComponent implements OnInit {
           Validators.required,
           Validators.minLength(6)
         ]),
-        confirmPassword: new FormControl('')
-      }, this.passwordValidator),
+        confirmPassword: new FormControl('', Validators.required)
+      }, this.passwordValidator.validate),
       profile: new FormGroup({
         userName: new FormControl(''),
         phone: new FormControl(''),
@@ -52,8 +60,34 @@ export class FormComponent implements OnInit {
         ]),
         creationDate: new FormControl(''),
       }),
+      contacts: new FormArray([])
     });
-    this.contacts = new FormArray([]);
+
+    this.userService.getUser().subscribe(data => {
+      this.userData = data;
+      this.form.patchValue({
+        account: {
+          email: this.userData.email,
+          password: this.userData.password,
+          confirmPassword: this.userData.confirmPassword
+        },
+        profile: {
+          userName: this.userData.userName,
+          phone: this.userData.phone,
+          city: this.userData.city
+        },
+        company: {
+          companyName: this.userData.companyName,
+          ownershipType: this.userData.ownershipType,
+          individualNumber: this.userData.individualNumber,
+          industrialEnterprisesClassifier: this.userData.industrialEnterprisesClassifier,
+          allRussianClassifierEnterprises: this.userData.allRussianClassifierEnterprises,
+          // creationDate: new Date(...transformDate(this.userData.creationDate))
+        }
+      });
+    });
+
+    console.log();
   }
 
   submit(): void {
@@ -63,17 +97,17 @@ export class FormComponent implements OnInit {
     }
   }
 
-  passwordValidator(form: FormGroup) {
-    const condition = form.get('password').value !== form.get('confirmPassword').value;
-    return condition ? {passwordsDoNotMatch: true} : null;
-  }
-
   addContact(): void {
     const contact = new FormGroup({
       contactName: new FormControl('', Validators.required),
       contactPosition: new FormControl('', Validators.required),
       contactPhone: new FormControl('', Validators.required)
     });
-    this.contacts.push(contact);
+    (this.form.get('contacts') as FormArray).push(contact);
+  }
+
+  onChangeOwnershipType(): void {
+    const control = this.form.get('company.industrialEnterprisesClassifier');
+    this.form.get('company.ownershipType').value !== 'le' ? control.disable() : control.enable();
   }
 }

@@ -3,6 +3,9 @@ import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 
 export class ErrorMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    return control.dirty && form.invalid;
+    if (form.form.get('account').errors) {
+      return true;
+    }
   }
 }
+
